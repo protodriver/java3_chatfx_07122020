@@ -30,6 +30,14 @@ public class RegController {
 
         controller.tryToReg(login, password, nickname);
     }
+    @FXML
+    public void tryToReNick(ActionEvent actionEvent) {
+        String login = loginField.getText().trim();
+        String password = passwordField.getText().trim();
+        String nickname = nicknameField.getText().trim();
+
+        controller.tryToReNick(login, password, nickname);
+    }
 
     public void addMessage(String msg) {
         textArea.appendText(msg + "\n");

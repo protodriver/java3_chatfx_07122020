@@ -40,6 +40,16 @@ public class ClientHandler {
                                     sendMsg("/regno");
                                 }
                             }
+                            if (str.startsWith("/reNick ")) {
+                                String[] token = str.split("\\s", 4);
+                                boolean b = server.getAuthService()
+                                        .reNickation(token[1], token[2], token[3]);
+                                if (b) {
+                                    sendMsg("/reNickOk");
+                                } else {
+                                    sendMsg("/reNickNo");
+                                }
+                            }
 
                             if (str.startsWith("/auth ")) {
                                 String[] token = str.split("\\s", 3);

@@ -50,6 +50,7 @@ public class Controller implements Initializable {
     private String nickname;
     private Stage stage;
     private Stage regStage;
+    private Stage reNickStage;
     private RegController regController;
 
     public void setAuthenticated(boolean authenticated) {
@@ -70,6 +71,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         createRegWindow();
+        createReNickWindow();
         Platform.runLater(() -> {
             stage = (Stage) textField.getScene().getWindow();
             stage.setOnCloseRequest(event -> {
@@ -106,6 +108,14 @@ public class Controller implements Initializable {
                                 regController.addMessage("Регистрация не получилась\n" +
                                         "Возможно предложенные лоин или никнейм уже заняты");
                             }
+                            if (str.equals("/reNickOk")) {
+                                regController.addMessage("Ник изменен");
+                            }
+                            if (str.equals("/reNickNo")) {
+                                regController.addMessage("Ник не изменен\n" +
+                                        "Возможно никнейм уже занят, или ошибка пары логин-пароль");
+                            }
+
 
                             if (str.startsWith("/authok ")) {
                                 nickname = str.split("\\s")[1];
@@ -218,16 +228,48 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    private void createReNickWindow() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/reNick.fxml"));
+            Parent root = fxmlLoader.load();
+            reNickStage = new Stage();
+            reNickStage.setTitle("СпэйсЧат переназваться");
+            reNickStage.setScene(new Scene(root, 350, 300));
+            reNickStage.initModality(Modality.APPLICATION_MODAL);
 
+            regController = fxmlLoader.getController();
+            regController.setController(this);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void showRegWindow(ActionEvent actionEvent) {
         regStage.show();
     }
+    @FXML
+    public void showReNickWindow(ActionEvent actionEvent) {
+        reNickStage.show();
+    }
 
     public void tryToReg(String login, String password, String nickname) {
         String msg = String.format("/reg %s %s %s", login, password, nickname);
+
+        if (socket == null || socket.isClosed()) {
+            connect();
+        }
+
+        try {
+            out.writeUTF(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void tryToReNick(String login, String password, String nickname) {
+        String msg = String.format("/reNick %s %s %s", login, password, nickname);
 
         if (socket == null || socket.isClosed()) {
             connect();
