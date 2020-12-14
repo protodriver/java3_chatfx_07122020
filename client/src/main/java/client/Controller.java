@@ -16,12 +16,15 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 public class Controller implements Initializable {
     @FXML
@@ -132,6 +135,18 @@ public class Controller implements Initializable {
                         }
                     }
 
+                    InputStreamReader inputLog = new InputStreamReader(new FileInputStream("log_" + nickname + ".txt"), StandardCharsets.UTF_8);
+                    BufferedReader reader = new BufferedReader(inputLog);
+                    ArrayList<String> arr = new ArrayList<>();
+                    while (reader.ready()) {
+                        arr.add(reader.readLine() + "\n");
+                    }
+                    ListIterator<String> it = arr.listIterator(arr.size());
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; it.hasPrevious() && i < 100; i++) {
+                        sb.insert(0, it.previous());
+                    }
+                    textArea.appendText(sb.toString());
                     //Цикл работы
                     while (true) {
                         String str = in.readUTF();
@@ -157,6 +172,12 @@ public class Controller implements Initializable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
+                    try {
+                        FileOutputStream fileLog = new FileOutputStream("log_" + nickname + ".txt", true);
+                        fileLog.write(textArea.getText().getBytes());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     setAuthenticated(false);
                     try {
                         socket.close();
