@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server {
     private ServerSocket server;
@@ -19,12 +21,16 @@ public class Server {
         try {
             server = new ServerSocket(PORT);
             System.out.println("server started!");
+            ExecutorService service = Executors.newCachedThreadPool();
 
             while (true) {
                 socket = server.accept();
                 System.out.println("client connected " + socket.getRemoteSocketAddress());
-                new ClientHandler(this, socket);
+                service.execute(() -> {
+                    new ClientHandler(this, socket);
+                });
             }
+
 
         } catch (IOException e) {
             e.printStackTrace();

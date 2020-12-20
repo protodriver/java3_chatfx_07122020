@@ -30,3 +30,36 @@ s1 : d
 [ s1 ] private [ s1 ] : ddd
 s1 : saaa
 s1 : eezzz
+s1 : as
+s1 : ddd
+[ s1 ] private [ s1 ] : sdas
+s1 : qwe
+s1 : qwee
+s1 : qq
+s1 : q
+s1 : w
+s1 : we
+s1 : 
+s1 : e
+s1 : ef
+s1 : sd
+s1 : f
+s1 : sdf
+s1 : 
+s1 : g
+s1 : fdh
+s1 : d
+s1 : 
+s1 : e
+s1 : ef
+s1 : sd
+s1 : f
+s1 : sdf
+s1 : 
+s1 : g
+s1 : fdh
+s1 : d
+[ s1 ] private [ s1 ] : ddd
+s1 : saaa
+s1 : eezzz
+ss : qwer
