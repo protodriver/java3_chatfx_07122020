@@ -5,6 +5,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class Server {
     private ServerSocket server;
@@ -14,15 +18,25 @@ public class Server {
     private AuthService authService;
 
     public Server() {
+        Logger logger = Logger.getLogger(this.getClass().getName());
+        Logger loggerSrv = Logger.getLogger("server");
+        try {
+            Handler handler = new FileHandler("logSrv.txt", true);
+            loggerSrv.addHandler(handler);
+            handler.setFormatter(new SimpleFormatter());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         clients = new CopyOnWriteArrayList<>();
         authService = new SimpleAuthService();
         try {
             server = new ServerSocket(PORT);
             System.out.println("server started!");
-
+            logger.info("Server started.");
             while (true) {
                 socket = server.accept();
                 System.out.println("client connected " + socket.getRemoteSocketAddress());
+                logger.info("User connected " + socket.getRemoteSocketAddress());
                 new ClientHandler(this, socket);
             }
 
@@ -30,6 +44,7 @@ public class Server {
             e.printStackTrace();
         } finally {
             System.out.println("server closed");
+            logger.info("Server closed.");
             try {
                 server.close();
             } catch (IOException e) {
