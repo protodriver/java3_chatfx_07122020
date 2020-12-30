@@ -5,8 +5,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 public class ClientHandler {
+    Logger logger = Logger.getLogger(this.getClass().getName());
     private Server server;
     private Socket socket;
     private DataInputStream in;
@@ -14,6 +19,7 @@ public class ClientHandler {
 
     private String nickname;
     private String login;
+    private static ExecutorService service = Executors.newCachedThreadPool();
 
     public ClientHandler(Server server, Socket socket) {
         try {
@@ -22,7 +28,7 @@ public class ClientHandler {
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
 
-            new Thread(() -> {
+            Future future = service.submit(() -> {
                 try {
                     socket.setSoTimeout(120000);
                     //цикл аутентификации
@@ -62,6 +68,7 @@ public class ClientHandler {
                                         out.writeUTF("/authok " + nickname);
                                         server.subscribe(this);
                                         socket.setSoTimeout(0);
+                                        logger.info("Подключился юзер " + nickname);
                                         break;
                                     } else {
                                         out.writeUTF("Учетная запись уже используется");
@@ -76,6 +83,7 @@ public class ClientHandler {
                     //Цикл работы
                     while (true) {
                         String str = in.readUTF();
+                        logger.info(nickname + " что-то написал");
 
                         if (str.startsWith("/")) {
                             if (str.startsWith("/w")) {
@@ -94,9 +102,10 @@ public class ClientHandler {
                             server.broadcastMsg(this, str);
                         }
                     }
-                }catch (SocketTimeoutException e){
+                } catch (SocketTimeoutException e){
                     sendMsg("/end");
                 } catch (IOException e) {
+                    logger.info(nickname + "некая ошибка случилась " + e.getMessage());
                     e.printStackTrace();
                 } finally {
                     System.out.println("Client disconnected!");
@@ -107,7 +116,7 @@ public class ClientHandler {
                         e.printStackTrace();
                     }
                 }
-            }).start();
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }

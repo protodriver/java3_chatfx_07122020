@@ -55,6 +55,7 @@ public class Controller implements Initializable {
     private Stage regStage;
     private Stage reNickStage;
     private RegController regController;
+    private RegController reNickController;
 
     public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
@@ -112,10 +113,10 @@ public class Controller implements Initializable {
                                         "Возможно предложенные лоин или никнейм уже заняты");
                             }
                             if (str.equals("/reNickOk")) {
-                                regController.addMessage("Ник изменен");
+                                reNickController.addMessage("Ник изменен");
                             }
                             if (str.equals("/reNickNo")) {
-                                regController.addMessage("Ник не изменен\n" +
+                                reNickController.addMessage("Ник не изменен\n" +
                                         "Возможно никнейм уже занят, или ошибка пары логин-пароль");
                             }
 
@@ -149,7 +150,7 @@ public class Controller implements Initializable {
                     textArea.appendText(sb.toString());
                     //Цикл работы
                     while (true) {
-                        String str = in.readUTF();
+                        String str=in.readUTF();
                         if (str.startsWith("/")) {
                             if (str.startsWith("/clientlist ")) {
                                 String[] token = str.split("\\s");
@@ -200,6 +201,7 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        String d = "";
     }
 
     @FXML
@@ -259,8 +261,8 @@ public class Controller implements Initializable {
             reNickStage.setScene(new Scene(root, 350, 300));
             reNickStage.initModality(Modality.APPLICATION_MODAL);
 
-            regController = fxmlLoader.getController();
-            regController.setController(this);
+            reNickController = fxmlLoader.getController();
+            reNickController.setController(this);
 
         } catch (IOException e) {
             e.printStackTrace();
